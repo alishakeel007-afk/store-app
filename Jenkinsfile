@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         APP_URL = 'http://localhost:8081'
-        TEST_REPO_URL = 'https://github.com/YOUR_USERNAME/YOUR_SELENIUM_TEST_REPO.git'
+        TEST_REPO_URL = 'https://github.com/alishakeel007-afk/store-app-selenium-tests.git'
     }
 
     stages {
