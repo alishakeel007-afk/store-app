@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         APP_URL = 'http://localhost:8081'
-        TEST_APP_URL = 'http://app:8000'
+        TEST_APP_URL = 'http://assignment-store-app:8000'
         TEST_REPO_URL = 'https://github.com/alishakeel007-afk/store-app-selenium-tests.git'
         COMPOSE_PROJECT_NAME = 'store-app'
     }
@@ -52,6 +52,10 @@ pipeline {
                   alpine:3.20 \
                   sh -c "rm -rf selenium-tests"
                 git clone "$TEST_REPO_URL" selenium-tests
+                docker run --rm \
+                  --network "$COMPOSE_PROJECT_NAME"_default \
+                  curlimages/curl:8.10.1 \
+                  -fsS "$TEST_APP_URL/health"
                 docker run --rm \
                   --shm-size=2g \
                   -e APP_URL="$TEST_APP_URL" \
