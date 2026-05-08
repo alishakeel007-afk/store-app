@@ -74,20 +74,31 @@ pipeline {
         always {
             junit allowEmptyResults: true, testResults: 'selenium-tests/target/surefire-reports/*.xml'
             sh 'docker compose -p "$COMPOSE_PROJECT_NAME" ps || true'
-        }
-        success {
-            emailext(
-                subject: "Selenium tests passed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "Build passed. Application URL: ${env.APP_URL}",
-                recipientProviders: [developers(), requestor()]
-            )
-        }
-        failure {
-            emailext(
-                subject: "Selenium tests failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "Build failed. Check Jenkins console output and test report.",
-                recipientProviders: [developers(), requestor()]
-            )
+            script {
+                def pushedByEmail = sh(
+                    script: 'git log -1 --pretty=format:%ae',
+                    returnStdout: true
+                ).trim()
+
+                if (pushedByEmail) {
+                    emailext(
+                        to: pushedByEmail,
+                        subject: "Selenium test results: ${currentBuild.currentResult} - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                        body: """
+Build result: ${currentBuild.currentResult}
+Job: ${env.JOB_NAME} #${env.BUILD_NUMBER}
+Commit: ${env.GIT_COMMIT}
+Application URL: ${env.APP_URL}
+
+Selenium test results are attached and published in Jenkins.
+""",
+                        attachmentsPattern: 'selenium-tests/target/surefire-reports/*.xml',
+                        attachLog: true
+                    )
+                } else {
+                    echo 'No commit author email found; skipping test result email.'
+                }
+            }
         }
     }
 }
