@@ -46,7 +46,7 @@ pipeline {
                   -e APP_URL="$APP_URL" \
                   -v "$PWD/selenium-tests:/tests" \
                   -w /tests \
-                  markhobson/maven-chrome:maven-3.9.9-eclipse-temurin-21 \
+                  markhobson/maven-chrome:jdk-17 \
                   mvn test
                 '''
             }
