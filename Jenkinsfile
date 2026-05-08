@@ -1,9 +1,14 @@
 pipeline {
     agent any
 
+    options {
+        disableConcurrentBuilds()
+    }
+
     environment {
         APP_URL = 'http://localhost:8081'
         TEST_REPO_URL = 'https://github.com/alishakeel007-afk/store-app-selenium-tests.git'
+        COMPOSE_PROJECT_NAME = 'store-app'
     }
 
     stages {
@@ -16,8 +21,8 @@ pipeline {
         stage('Start Application') {
             steps {
                 sh '''
-                docker compose down || true
-                docker compose up -d --build
+                docker compose -p "$COMPOSE_PROJECT_NAME" down --remove-orphans || true
+                docker compose -p "$COMPOSE_PROJECT_NAME" up -d --build
                 '''
             }
         }
@@ -56,7 +61,7 @@ pipeline {
     post {
         always {
             junit allowEmptyResults: true, testResults: 'selenium-tests/target/surefire-reports/*.xml'
-            sh 'docker compose ps || true'
+            sh 'docker compose -p "$COMPOSE_PROJECT_NAME" ps || true'
         }
         success {
             emailext(
