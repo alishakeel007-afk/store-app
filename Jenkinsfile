@@ -7,6 +7,7 @@ pipeline {
 
     environment {
         APP_URL = 'http://localhost:8081'
+        TEST_APP_URL = 'http://app:8000'
         TEST_REPO_URL = 'https://github.com/alishakeel007-afk/store-app-selenium-tests.git'
         COMPOSE_PROJECT_NAME = 'store-app'
     }
@@ -36,7 +37,7 @@ pipeline {
                   fi
                   sleep 2
                 done
-                docker compose logs
+                docker compose -p "$COMPOSE_PROJECT_NAME" logs
                 exit 1
                 '''
             }
@@ -47,10 +48,12 @@ pipeline {
                 sh '''
                 rm -rf selenium-tests
                 git clone "$TEST_REPO_URL" selenium-tests
-                docker run --rm --network host \
-                  -e APP_URL="$APP_URL" \
+                docker run --rm \
+                  -e APP_URL="$TEST_APP_URL" \
+                  -e MANAGER_PASSWORD="admin123" \
                   -v "$PWD/selenium-tests:/tests" \
                   -w /tests \
+                  --network "$COMPOSE_PROJECT_NAME"_default \
                   markhobson/maven-chrome:jdk-17 \
                   mvn test
                 '''
