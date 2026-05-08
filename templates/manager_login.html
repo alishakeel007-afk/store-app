@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Manager Login | Assignment Store{% endblock %}
+
+{% block content %}
+  <section class="auth-panel">
+    <h1>Manager login</h1>
+    <form method="post" action="{{ url_for('manager_login') }}" class="stack-form" data-testid="manager-login-form">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required>
+      <button id="manager-login-button" type="submit">Login</button>
+    </form>
+  </section>
+{% endblock %}

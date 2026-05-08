@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Manager Panel | Assignment Store{% endblock %}
+
+{% block content %}
+  <section class="hero compact">
+    <div>
+      <p class="eyebrow">Protected manager area</p>
+      <h1>Manager panel</h1>
+    </div>
+    <form method="post" action="{{ url_for('manager_logout') }}">
+      <button class="secondary" id="manager-logout-button" type="submit">Logout</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Add product</h2>
+    <form method="post" action="{{ url_for('create_product') }}" class="manager-form" data-testid="create-product-form">
+      <label for="name">Name</label>
+      <input id="name" name="name" required>
+
+      <label for="category">Category</label>
+      <select id="category" name="category">
+        {% for category in categories %}
+          <option value="{{ category }}">{{ category }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="price">Price</label>
+      <input id="price" name="price" type="number" min="0" step="0.01" required>
+
+      <label for="stock_status">Stock</label>
+      <select id="stock_status" name="stock_status">
+        {% for status in stock_statuses %}
+          <option value="{{ status }}">{{ status }}</option>
+        {% endfor %}
+      </select>
+
+      <button id="create-product-button" type="submit">Create product</button>
+    </form>
+  </section>
+
+  <section class="panel" data-testid="manager-products">
+    <h2>Products</h2>
+    {% for product in products %}
+      <article class="row-card" data-testid="manager-product-row">
+        <form method="post" action="{{ url_for('edit_product', product_id=product.id) }}" class="edit-form">
+          <label for="edit-name-{{ product.id }}">Name</label>
+          <input id="edit-name-{{ product.id }}" name="name" value="{{ product.name }}" required>
+
+          <label for="edit-category-{{ product.id }}">Category</label>
+          <select id="edit-category-{{ product.id }}" name="category">
+            {% for category in categories %}
+              <option value="{{ category }}" {% if product.category == category %}selected{% endif %}>{{ category }}</option>
+            {% endfor %}
+          </select>
+
+          <label for="edit-price-{{ product.id }}">Price</label>
+          <input id="edit-price-{{ product.id }}" name="price" type="number" min="0" step="0.01" value="{{ product.price }}" required>
+
+          <label for="edit-stock-{{ product.id }}">Stock</label>
+          <select id="edit-stock-{{ product.id }}" name="stock_status">
+            {% for status in stock_statuses %}
+              <option value="{{ status }}" {% if product.stock_status == status %}selected{% endif %}>{{ status }}</option>
+            {% endfor %}
+          </select>
+
+          <button type="submit" data-testid="update-product-button">Update</button>
+        </form>
+        <form method="post" action="{{ url_for('delete_product', product_id=product.id) }}">
+          <button class="danger" type="submit" data-testid="delete-product-button">Delete</button>
+        </form>
+      </article>
+    {% endfor %}
+  </section>
+
+  <section class="panel" data-testid="manager-orders">
+    <h2>Orders</h2>
+    {% for order in orders %}
+      <article class="order-row" data-testid="order-row">
+        <div>
+          <strong>{{ order.customer_name }}</strong>
+          <p>{{ order.product_name }} x {{ order.quantity }} | {{ order.customer_email }}</p>
+        </div>
+        <form method="post" action="{{ url_for('update_order_status', order_id=order.id) }}" class="status-form">
+          <label for="order-status-{{ order.id }}">Status</label>
+          <select id="order-status-{{ order.id }}" name="order_status">
+            {% for status in order_statuses %}
+              <option value="{{ status }}" {% if order.order_status == status %}selected{% endif %}>{{ status }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" data-testid="update-order-button">Save</button>
+        </form>
+      </article>
+    {% else %}
+      <p class="empty" data-testid="empty-orders">No orders yet.</p>
+    {% endfor %}
+  </section>
+{% endblock %}

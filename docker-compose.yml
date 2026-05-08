@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: assignment-store-db
+    environment:
+      POSTGRES_DB: assignment_store
+      POSTGRES_USER: store_user
+      POSTGRES_PASSWORD: store_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - assignment_store_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U store_user -d assignment_store"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: assignment-store-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://store_user:store_password@db:5432/assignment_store
+      SECRET_KEY: assignment-secret-change-before-submit
+      MANAGER_PASSWORD: admin123
+    ports:
+      - "8081:8000"
+
+volumes:
+  assignment_store_data:

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Storefront | Assignment Store{% endblock %}
+
+{% block content %}
+  <section class="hero">
+    <div>
+      <p class="eyebrow">PostgreSQL backed ecommerce demo</p>
+      <h1>Storefront</h1>
+      <p class="muted">Browse products, filter categories, and place test orders.</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <form class="filter-form" method="get" action="{{ url_for('storefront') }}" data-testid="filter-form">
+      <label for="q">Search</label>
+      <input id="q" name="q" value="{{ search }}" placeholder="Search products">
+
+      <label for="category">Category</label>
+      <select id="category" name="category">
+        <option value="">All categories</option>
+        {% for category in categories %}
+          <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
+        {% endfor %}
+      </select>
+
+      <button id="filter-button" type="submit">Filter</button>
+      <a class="button secondary" href="{{ url_for('storefront') }}">Reset</a>
+    </form>
+  </section>
+
+  <section class="grid" data-testid="product-list">
+    {% for product in products %}
+      <article class="product-card" data-testid="product-card">
+        <div>
+          <p class="tag">{{ product.category }}</p>
+          <h2>{{ product.name }}</h2>
+          <p class="price">${{ "%.2f"|format(product.price) }}</p>
+          <p class="stock">{{ product.stock_status }}</p>
+        </div>
+
+        <form method="post" action="{{ url_for('place_order') }}" class="order-form" data-testid="order-form">
+          <input type="hidden" name="product_id" value="{{ product.id }}">
+          <label for="customer-name-{{ product.id }}">Name</label>
+          <input id="customer-name-{{ product.id }}" name="customer_name" required>
+
+          <label for="customer-email-{{ product.id }}">Email</label>
+          <input id="customer-email-{{ product.id }}" name="customer_email" type="email" required>
+
+          <label for="quantity-{{ product.id }}">Quantity</label>
+          <input id="quantity-{{ product.id }}" name="quantity" type="number" min="1" value="1" required>
+
+          <button type="submit" data-testid="place-order-button">Place order</button>
+        </form>
+      </article>
+    {% else %}
+      <p class="empty" data-testid="empty-products">No products found.</p>
+    {% endfor %}
+  </section>
+{% endblock %}
