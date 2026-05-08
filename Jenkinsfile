@@ -5,11 +5,16 @@ pipeline {
         disableConcurrentBuilds()
     }
 
+    triggers {
+        githubPush()
+    }
+
     environment {
         APP_URL = 'http://localhost:8081'
         TEST_APP_URL = 'http://assignment-store-app:8000'
         TEST_REPO_URL = 'https://github.com/alishakeel007-afk/store-app-selenium-tests.git'
         COMPOSE_PROJECT_NAME = 'store-app'
+        TEST_RESULTS_EMAIL = 'qasimalik@gmail.com'
     }
 
     stages {
@@ -80,24 +85,21 @@ pipeline {
                     returnStdout: true
                 ).trim()
 
-                if (pushedByEmail) {
-                    emailext(
-                        to: pushedByEmail,
-                        subject: "Selenium test results: ${currentBuild.currentResult} - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                        body: """
+                emailext(
+                    to: env.TEST_RESULTS_EMAIL,
+                    subject: "Selenium test results: ${currentBuild.currentResult} - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """
 Build result: ${currentBuild.currentResult}
 Job: ${env.JOB_NAME} #${env.BUILD_NUMBER}
 Commit: ${env.GIT_COMMIT}
+Pushed by: ${pushedByEmail}
 Application URL: ${env.APP_URL}
 
 Selenium test results are attached and published in Jenkins.
 """,
-                        attachmentsPattern: 'selenium-tests/target/surefire-reports/*.xml',
-                        attachLog: true
-                    )
-                } else {
-                    echo 'No commit author email found; skipping test result email.'
-                }
+                    attachmentsPattern: 'selenium-tests/target/surefire-reports/*.xml',
+                    attachLog: true
+                )
             }
         }
     }
