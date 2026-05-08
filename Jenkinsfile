@@ -46,9 +46,15 @@ pipeline {
         stage('Run Selenium Tests') {
             steps {
                 sh '''
-                rm -rf selenium-tests
-                git clone "$TEST_REPO_URL" selenium-tests
                 docker run --rm \
+                  -v "$PWD:/workspace" \
+                  -w /workspace \
+                  alpine:3.20 \
+                  sh -c "rm -rf selenium-tests"
+                git clone "$TEST_REPO_URL" selenium-tests
+                USER_IDS="$(id -u):$(id -g)"
+                docker run --rm \
+                  --user "$USER_IDS" \
                   -e APP_URL="$TEST_APP_URL" \
                   -e MANAGER_PASSWORD="admin123" \
                   -v "$PWD/selenium-tests:/tests" \
