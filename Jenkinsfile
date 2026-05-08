@@ -88,8 +88,6 @@ pipeline {
 
                 emailext(
                     to: env.TEST_RESULTS_EMAIL,
-                    from: env.TEST_RESULTS_FROM,
-                    replyTo: env.TEST_RESULTS_FROM,
                     subject: "Selenium test results: ${currentBuild.currentResult} - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     mimeType: 'text/plain',
                     body: """
@@ -102,7 +100,8 @@ Application URL: ${env.APP_URL}
 Selenium test results are attached and published in Jenkins.
 """,
                     attachmentsPattern: 'selenium-tests/target/surefire-reports/*.xml',
-                    attachLog: true
+                    attachLog: true,
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
                 )
             }
         }
