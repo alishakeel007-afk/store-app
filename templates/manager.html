@@ -44,6 +44,10 @@
     <h2>Products</h2>
     {% for product in products %}
       <article class="row-card" data-testid="manager-product-row">
+        <div class="product-row-summary">
+          <strong>{{ product.name }}</strong>
+          <p>{{ product.category }} | {{ product.stock_status }}</p>
+        </div>
         <form method="post" action="{{ url_for('edit_product', product_id=product.id) }}" class="edit-form">
           <label for="edit-name-{{ product.id }}">Name</label>
           <input id="edit-name-{{ product.id }}" name="name" value="{{ product.name }}" required>

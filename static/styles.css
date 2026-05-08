@@ -291,6 +291,17 @@ button:hover {
   border-top: 0;
 }
 
+.row-card {
+  grid-template-columns: minmax(170px, 220px) 1fr auto;
+  align-items: start;
+}
+
+.product-row-summary p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
 @media (max-width: 900px) {
   .topbar,
   .hero,
