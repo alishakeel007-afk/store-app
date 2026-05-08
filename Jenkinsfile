@@ -15,6 +15,7 @@ pipeline {
         TEST_REPO_URL = 'https://github.com/alishakeel007-afk/store-app-selenium-tests.git'
         COMPOSE_PROJECT_NAME = 'store-app'
         TEST_RESULTS_EMAIL = 'qasimalik@gmail.com'
+        TEST_RESULTS_FROM = 'alishakeel2101@gmail.com'
     }
 
     stages {
@@ -87,7 +88,10 @@ pipeline {
 
                 emailext(
                     to: env.TEST_RESULTS_EMAIL,
+                    from: env.TEST_RESULTS_FROM,
+                    replyTo: env.TEST_RESULTS_FROM,
                     subject: "Selenium test results: ${currentBuild.currentResult} - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    mimeType: 'text/plain',
                     body: """
 Build result: ${currentBuild.currentResult}
 Job: ${env.JOB_NAME} #${env.BUILD_NUMBER}
