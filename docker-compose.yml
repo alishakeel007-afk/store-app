@@ -27,7 +27,7 @@ services:
       SECRET_KEY: assignment-secret-change-before-submit
       MANAGER_PASSWORD: admin123
     ports:
-      - "8081:8000"
+      - "80:8000"
 
 volumes:
   assignment_store_data:

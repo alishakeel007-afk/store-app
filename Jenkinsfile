@@ -10,7 +10,7 @@ pipeline {
     }
 
     environment {
-        APP_URL = 'http://localhost:8081'
+        APP_URL = 'http://localhost:80'
         TEST_APP_URL = 'http://assignment-store-app:8000'
         TEST_REPO_URL = 'https://github.com/alishakeel007-afk/store-app-selenium-tests.git'
         COMPOSE_PROJECT_NAME = 'store-app'
